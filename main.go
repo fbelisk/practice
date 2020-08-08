@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	_ "net/http/pprof"
 	"time"
 )
@@ -32,14 +31,17 @@ type Server struct {
 	}
 }
 
-func main() {
-	go func() {
-		for {
-			log.Println("1")
-		}
-	}()
+func (receiver *Server) name()  {
+	receiver.Name = "ssss"
+}
 
-	http.ListenAndServe("0.0.0.0:6060", nil)
+func main() {
+	s := &Server{
+		Name: "sssss",
+	}
+	b := *s
+	b.Name = "aaaaaa"
+	fmt.Printf("%+v", s)
 }
 
 func Add(n int) int {
