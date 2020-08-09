@@ -10,7 +10,7 @@ type Bucket struct {
 	Capacity int64
 	Tokens   int64
 	Interval time.Duration
-	inc      int64
+	Inc      int64
 }
 
 func (b *Bucket) Start() {
@@ -22,7 +22,7 @@ func (b *Bucket) Start() {
 		case <-b.closeCh:
 			return
 		default:
-			b.Put(b.inc)
+			b.Put(b.Inc)
 		}
 	}
 }
@@ -73,10 +73,10 @@ func (b *Bucket) TakeWait(count int64, maxWait time.Duration) (tokens int64, wai
 	for {
 		t := atomic.LoadInt64(&b.Tokens)
 		if t < count {
-			waitTime = time.Duration((count - t + b.inc) * int64(b.Interval) / b.inc)
+			waitTime = time.Duration((count - t + b.Inc) * int64(b.Interval) / b.Inc)
 			if waitTime > maxWait {
 				waitTime = maxWait
-				count = int64(maxWait /b.Interval) * b.inc + t - b.inc
+				count = int64(maxWait /b.Interval) * b.Inc + t - b.Inc
 			}
 		}
 

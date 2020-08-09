@@ -38,7 +38,7 @@ func TestBucket_Put(t *testing.T) {
 				Capacity: tt.fields.Capacity,
 				Tokens:   tt.fields.Tokens,
 				Interval: tt.fields.Interval,
-				inc:      tt.fields.inc,
+				Inc:      tt.fields.inc,
 			}
 			for i:= 0; i < 500; i++ {
 				go b.Put(1)
