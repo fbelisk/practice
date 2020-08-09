@@ -7,10 +7,10 @@ import (
 
 type Bucket struct {
 	closeCh  chan int
-	Capacity uint64
-	Tokens   uint64
+	Capacity int64
+	Tokens   int64
 	Interval time.Duration
-	inc      uint64
+	inc      int64
 }
 
 func (b *Bucket) Start() {
@@ -27,28 +27,63 @@ func (b *Bucket) Start() {
 	}
 }
 
-func (b *Bucket) Put(count uint64) {
+func (b *Bucket) Put(count int64) int64 {
+	if count <= 0 {
+		return 0
+	}
 	for {
-		t := atomic.LoadUint64(&b.Tokens)
-		if t == b.Capacity {
-			return
-		}
-		if !atomic.CompareAndSwapUint64(&b.Tokens, t, t+count) {
+		t := atomic.LoadInt64(&b.Tokens)
+		if t+count > b.Capacity {
+			if atomic.CompareAndSwapInt64(&b.Tokens, t, b.Capacity) {
+				return b.Capacity - t
+			}
 			continue
 		}
-		return
+		if atomic.CompareAndSwapInt64(&b.Tokens, t, t+count) {
+			return count
+		}
+		continue
 	}
 }
 
-func (b *Bucket) Take(count uint64) bool{
+func (b *Bucket) Take(count int64) int64 {
+	if count <= 0 {
+		return 0
+	}
 	for {
-		t := atomic.LoadUint64(&b.Tokens)
-		if t == 0 {
-			return false
-		}
-		if !atomic.CompareAndSwapUint64(&b.Tokens, t, t-count) {
+		t := atomic.LoadInt64(&b.Tokens)
+		if t < count {
+			if atomic.CompareAndSwapInt64(&b.Tokens, t, 0) {
+				return t
+			}
 			continue
 		}
-		return true
+
+		if atomic.CompareAndSwapInt64(&b.Tokens, t, t-count) {
+			return count
+		}
+		continue
+	}
+}
+
+func (b *Bucket) TakeWait(count int64, maxWait time.Duration) (tokens int64, waitTime time.Duration) {
+	if count <= 0 {
+		return 0, 0
+	}
+	for {
+		t := atomic.LoadInt64(&b.Tokens)
+		if t < count {
+			waitTime = time.Duration((count - t + b.inc) * int64(b.Interval) / b.inc)
+			if waitTime > maxWait {
+				waitTime = maxWait
+				count = int64(maxWait /b.Interval) * b.inc + t - b.inc
+			}
+		}
+
+		if atomic.CompareAndSwapInt64(&b.Tokens, t, t-count) {
+			time.Sleep(waitTime)
+			return count, waitTime
+		}
+		continue
 	}
 }
