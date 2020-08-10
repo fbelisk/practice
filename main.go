@@ -39,7 +39,7 @@ func main() {
 	a := 0b0110
 	for {
 		if lowBit := (a & -a) ; lowBit != 0 {
-			fmt.Printf("%b \n", lowBit)
+			fmt.Printf("%b \n ", lowBit)
 			a = a ^ lowBit
 			continue
 		}
