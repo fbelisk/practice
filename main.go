@@ -36,12 +36,15 @@ func (receiver *Server) name()  {
 }
 
 func main() {
-	s := &Server{
-		Name: "sssss",
+	a := 0b0110
+	for {
+		if lowBit := (a & -a) ; lowBit != 0 {
+			fmt.Printf("%b \n", lowBit)
+			a = a ^ lowBit
+			continue
+		}
+		return
 	}
-	b := *s
-	b.Name = "aaaaaa"
-	fmt.Printf("%+v", s)
 }
 
 func Add(n int) int {

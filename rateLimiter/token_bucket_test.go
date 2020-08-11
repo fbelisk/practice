@@ -9,13 +9,13 @@ import (
 func TestBucket_Put(t *testing.T) {
 	type fields struct {
 		closeCh  chan int
-		Capacity uint64
-		Tokens   uint64
+		Capacity int64
+		Tokens   int64
 		Interval time.Duration
-		inc      uint64
+		Inc      int64
 	}
 	type args struct {
-		inc uint64
+		Inc int64
 	}
 	tests := []struct {
 		name   string
@@ -27,7 +27,7 @@ func TestBucket_Put(t *testing.T) {
 				Capacity: 1000,
 				Tokens:   0,
 				Interval: 0,
-				inc:      0,
+				Inc:      0,
 			},
 		},
 	}
@@ -38,7 +38,7 @@ func TestBucket_Put(t *testing.T) {
 				Capacity: tt.fields.Capacity,
 				Tokens:   tt.fields.Tokens,
 				Interval: tt.fields.Interval,
-				Inc:      tt.fields.inc,
+				Inc:      tt.fields.Inc,
 			}
 			for i:= 0; i < 500; i++ {
 				go b.Put(1)
