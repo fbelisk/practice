@@ -36,15 +36,10 @@ func (receiver *Server) name()  {
 }
 
 func main() {
-	a := 0b0110
-	for {
-		if lowBit := (a & -a) ; lowBit != 0 {
-			fmt.Printf("%b \n ", lowBit)
-			a = a ^ lowBit
-			continue
-		}
-		return
-	}
+	t := make(map[int]int, 10)
+	println(len(t))
+	t[1] = 1
+	println(len(t))
 }
 
 func Add(n int) int {
