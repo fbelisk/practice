@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"log"
 	_ "net/http/pprof"
+	"struct/tcpClient"
+	"struct/tcpServer"
+	"struct/utils"
 	"time"
 )
 
@@ -36,10 +39,11 @@ func (receiver *Server) name()  {
 }
 
 func main() {
-	t := make(map[int]int, 10)
-	println(len(t))
-	t[1] = 1
-	println(len(t))
+	w := &util.WaitGroupWrapper{}
+	w.Wrap(tcpServer.Run)
+	time.Sleep(2 * time.Second)
+	w.Wrap(tcpClient.Run)
+	w.Wait()
 }
 
 func Add(n int) int {
